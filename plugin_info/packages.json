@@ -1,16 +1,17 @@
 {
-  "pre-install": {
-  },
+  "pre-install": {},
   "apt": {
+    "python3-pip": {},
+    "python3-setuptools": {},
+    "python3-dev": {}
   },
   "pip3": {
+    "pip": {},
+    "wheel": {},
+    "aiohttp": {}
   },
-  "npm": {
-  },
-  "yarn": {
-  },
-  "plugin": {
-  },
-  "post-install": {
-  }
+  "npm": {},
+  "yarn": {},
+  "plugin": {},
+  "post-install": {}
 }
