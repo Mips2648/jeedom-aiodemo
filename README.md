@@ -30,7 +30,7 @@ All of them can be triggered several times without waiting the result of others 
 
 ## how is it working
 
-I tried to comment as best as I can the example so I suggest you start by opening this file `resources\aiodemod\aiodemod.py` and read the comments.
+I tried to comment the code as best as I can the example so I suggest you start by opening this file `resources\aiodemod\aiodemod.py` and read the comments.
 I you ever wish to implement a asyncio daemon, you can use this example as base.
 
 You will need 2 extra modules to be put in jeedom package (not yet present in #plugin-template):
