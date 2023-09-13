@@ -73,9 +73,11 @@ class AIODemod:
 
     async def _think(self, message):
         random_int = random.randint(3, 15)
-        self._logger.info("==> received '%s', I will think about it during %is", message, random_int)
+        self._logger.info("==> think on received '%s' during %is", message, random_int)
+        await self._jeedom_publisher.send_to_jeedom({'alert':f"Let me think about '{message}' during {random_int}s"})
         await asyncio.sleep(random_int)
         self._logger.info("==> '%s' was an interesting information, thanks for the nap", message)
+        await self._jeedom_publisher.send_to_jeedom({'alert':f"'{message}' was an interesting information, thanks for the nap"})
 
     async def _search_animals(self):
         self._logger.info("Start searching animals")

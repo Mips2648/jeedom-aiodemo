@@ -86,6 +86,7 @@ class aiodemo extends eqLogic {
 
     public static function handleFeedback($message) {
         log::add(__CLASS__, 'debug', 'new feedback:' . json_encode($message));
+
         $eqLogic = eqLogic::byLogicalId('aiodemo', __CLASS__);
         if (!is_object($eqLogic)) {
             $eqLogic = new self();
@@ -98,6 +99,13 @@ class aiodemo extends eqLogic {
         }
 
         foreach ($message as $key => $value) {
+            if ($key == 'alert') {
+                event::add('jeedom::alert', array(
+                    'level' => 'success',
+                    'page' => 'aiodemo',
+                    'message' => $value
+                ));
+            }
             $eqLogic->checkAndUpdateCmd($key, $value);
         }
     }
