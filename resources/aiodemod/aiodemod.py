@@ -19,9 +19,8 @@ class AIODemod:
         self._config = config_
         self._listen_task = None
         self._send_task = None # Not needed if you don't need to send change to Jeedom in cycle
+        self._jeedom_publisher = None
         self._logger = logging.getLogger(__name__)
-
-        self._jeedom_publisher = Publisher(self._config.callback_url, self._config.api_key, self._config.cycle)
 
         # Below you can init your own variables if needed
         self._search_task = None
@@ -31,6 +30,7 @@ class AIODemod:
         The is the entry point of your daemon.
         You should start the asyncio loop with this function like this: `asyncio.run(daemon.main())`
         """
+        self._jeedom_publisher = Publisher(self._config.callback_url, self._config.api_key, self._config.cycle)
         if not await self._jeedom_publisher.test_callback():
             return
 
