@@ -35,6 +35,13 @@ class aiodemo extends eqLogic {
         return $return;
     }
 
+    private static function getPython3() {
+        if (method_exists('system', 'getCmdPython3')) {
+            return system::getCmdPython3(__CLASS__);
+        }
+        return 'python3 ';
+    }
+
     public static function deamon_start() {
         self::deamon_stop();
         $deamon_info = self::deamon_info();
@@ -45,14 +52,14 @@ class aiodemo extends eqLogic {
         config::remove('discovered_data_topics', __CLASS__);
 
         $path = realpath(dirname(__FILE__) . '/../../resources/aiodemod');
-        $cmd = "python3 {$path}/aiodemod.py";
+        $cmd = self::getPython3() . "{$path}/aiodemod.py";
         $cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
         $cmd .= ' --socketport ' . 55009;
         $cmd .= ' --cycle ' . config::byKey('cycle', __CLASS__, 2);
         $cmd .= ' --callback ' . network::getNetworkAccess('internal', 'proto:127.0.0.1:port:comp') . '/plugins/aiodemo/core/php/jeeaiodemo.php';
         $cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
         $cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/daemon.pid';
-        log::add(__CLASS__, 'info', 'Lancement démon');
+        log::add(__CLASS__, 'info', 'Lancement démon:' . self::getPython3() . "{$path}/aiodemod.py");
         $result = exec($cmd . ' >> ' . log::getPathToLog(__CLASS__ . '_daemon') . ' 2>&1 &');
         $i = 0;
         while ($i < 10) {
