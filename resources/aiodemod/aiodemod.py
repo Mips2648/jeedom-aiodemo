@@ -4,13 +4,23 @@ import asyncio
 from jeedomdaemon.base_daemon import BaseDaemon
 from jeedomdaemon.base_config import BaseConfig
 
+class DemoConfig(BaseConfig):
+    """This is where you declare your custom argument/configuration
+
+    Remember that all usual arguments are managed by the BaseConfig class already so you only have to take care of yours; e.g. user & password in this case
+    """
+    def __init__(self):
+        super().__init__()
+
+        self.add_argument("--user", type=str, default='Harrison')
+        self.add_argument("--password", type=str)
+
 class AIODemod(BaseDaemon):
     """This is the main class of you daemon"""
 
     def __init__(self) -> None:
         # Standard initialisation
-        self._config = BaseConfig() # no specific config needed for this daemon so we can directly use this class
-        super().__init__(self._config, self.on_start, self.on_message, self.on_stop)
+        super().__init__(config=DemoConfig(), on_start_cb=self.on_start, on_message_cb=self.on_message, on_stop_cb=self.on_stop)
 
         # Below you can init your own variables if needed
         self._search_task = None
@@ -25,6 +35,13 @@ class AIODemod(BaseDaemon):
         # `_search_task` is here to demo usage of background task in a daemon
         self._search_task = asyncio.create_task(self._search_animals())
 
+        # maybe we have to use some values received from Jeedom via argument?
+        # we declared user & password in our DemoConfig so we can use them directly
+        await self._login_somewhere(self._config.user, self._config.password)
+
+    async def _login_somewhere(self, user, password):
+        await asyncio.sleep(2)
+        self._logger.debug("Login done with '%s'", user)
 
     async def on_message(self, message: list):
         """
@@ -35,9 +52,9 @@ class AIODemod(BaseDaemon):
             await self._think(message['message'])
         elif message['action'] == 'ping':
             for i in range(1, 4):
-                await self._jeedom_publisher.send_to_jeedom({'pingpong':f'ping {i}'})
+                await self._publisher.send_to_jeedom({'pingpong':f'ping {i}'})
                 await asyncio.sleep(2)
-                await self._jeedom_publisher.send_to_jeedom({'pingpong':f'pong {i}'})
+                await self._publisher.send_to_jeedom({'pingpong':f'pong {i}'})
                 await asyncio.sleep(2)
         else:
             self._logger.warning('Unknown action: %s', message['action'])
@@ -46,10 +63,10 @@ class AIODemod(BaseDaemon):
         # this is a demo implementation of a single function, this function will be invoked once the corresponding call is received from Jeedom
         random_int = random.randint(3, 15)
         self._logger.info("==> think on received '%s' during %is", message, random_int)
-        await self._jeedom_publisher.send_to_jeedom({'alert':f"Let me think about '{message}' during {random_int}s"})
+        await self._publisher.send_to_jeedom({'alert':f"Let me think about '{message}' during {random_int}s"})
         await asyncio.sleep(random_int)
         self._logger.info("==> '%s' was an interesting information, thanks for the nap", message)
-        await self._jeedom_publisher.send_to_jeedom({'alert':f"'{message}' was an interesting information, thanks for the nap"})
+        await self._publisher.send_to_jeedom({'alert':f"'{message}' was an interesting information, thanks for the nap"})
 
     async def _search_animals(self):
         # this is a demo implementation of a backgroudn task, you must have a try ... except asyncio.CancelledError: ... that will intercept the cancel request from the loop
@@ -72,12 +89,12 @@ class AIODemod(BaseDaemon):
                 animal = animals[random.randint(0, max_int)]
                 nbr = random.randint(0, 97)
                 self._logger.info("I found %i %s(s)", nbr, animal.lower())
-                await self._jeedom_publisher.add_change(animal, nbr)
+                await self._publisher.add_change(animal, nbr)
                 await asyncio.sleep(random.randint(0, 2))
         except asyncio.CancelledError:
             self._logger.info("Stop searching animals")
 
-    def on_stop(self):
+    async def on_stop(self):
         """
         This callback will be called when daemon need to stop`
         You need to close your remote connexions and cancel background tasks if any here.
