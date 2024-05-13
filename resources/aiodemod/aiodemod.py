@@ -52,9 +52,9 @@ class AIODemod(BaseDaemon):
             await self._think(message['message'])
         elif message['action'] == 'ping':
             for i in range(1, 4):
-                await self._publisher.send_to_jeedom({'pingpong':f'ping {i}'})
+                await self.send_to_jeedom({'pingpong':f'ping {i}'})
                 await asyncio.sleep(2)
-                await self._publisher.send_to_jeedom({'pingpong':f'pong {i}'})
+                await self.send_to_jeedom({'pingpong':f'pong {i}'})
                 await asyncio.sleep(2)
         else:
             self._logger.warning('Unknown action: %s', message['action'])
@@ -63,10 +63,10 @@ class AIODemod(BaseDaemon):
         # this is a demo implementation of a single function, this function will be invoked once the corresponding call is received from Jeedom
         random_int = random.randint(3, 15)
         self._logger.info("==> think on received '%s' during %is", message, random_int)
-        await self._publisher.send_to_jeedom({'alert':f"Let me think about '{message}' during {random_int}s"})
+        await self.send_to_jeedom({'alert':f"Let me think about '{message}' during {random_int}s"})
         await asyncio.sleep(random_int)
         self._logger.info("==> '%s' was an interesting information, thanks for the nap", message)
-        await self._publisher.send_to_jeedom({'alert':f"'{message}' was an interesting information, thanks for the nap"})
+        await self.send_to_jeedom({'alert':f"'{message}' was an interesting information, thanks for the nap"})
 
     async def _search_animals(self):
         # this is a demo implementation of a backgroudn task, you must have a try ... except asyncio.CancelledError: ... that will intercept the cancel request from the loop
@@ -89,7 +89,7 @@ class AIODemod(BaseDaemon):
                 animal = animals[random.randint(0, max_int)]
                 nbr = random.randint(0, 97)
                 self._logger.info("I found %i %s(s)", nbr, animal.lower())
-                await self._publisher.add_change(animal, nbr)
+                await self.add_change(animal, nbr)
                 await asyncio.sleep(random.randint(0, 2))
         except asyncio.CancelledError:
             self._logger.info("Stop searching animals")
