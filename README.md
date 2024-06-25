@@ -7,7 +7,7 @@ This small plugin aims to demo the usage of a python daemon using asyncio.
 1. Add plugin from github source:
 
     - logical id: `aiodemo`
-    - user: `Mips2648`
+    - user: `mips2648`
     - repo: `jeedom-aiodemo`
     - branch: `master`
 
