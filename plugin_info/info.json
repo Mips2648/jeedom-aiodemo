@@ -10,7 +10,7 @@
 	"category": "programming",
 	"hasDependency": true,
 	"hasOwnDeamon": true,
-	"maxDependancyInstallTime": 0,
+	"maxDependancyInstallTime": 60,
 	"link": {
 		"forum": "Lien vers le forum",
 		"video": "Lien vers une video"
